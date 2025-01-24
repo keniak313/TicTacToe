@@ -234,6 +234,8 @@ function updateScore(){
 };
 
 function clearBoardUI(){
+    leftBar.classList.remove("activeWon");
+    rightBar.classList.remove("activeWon");
     while (container.firstChild){
         container.removeChild(container.firstChild);
     };
@@ -251,22 +253,26 @@ function activePlayerUI(){
 
 function winStatusUI(marker){
     if(marker === "X"){
-        winStatusText.classList.add("winX");
-        winStatusText.classList.remove("winO");
-        winStatusText.appendChild(iconXmark.cloneNode());
+        leftBar.classList.add("activeWon");
+        rightBar.classList.remove("activeWon");
+        //winStatusText.classList.add("winX");
+        //winStatusText.classList.remove("winO");
+        //winStatusText.appendChild(iconXmark.cloneNode());
         //winStatusText.textContent += "Wins!";
     }else{
-        winStatusText.classList.add("winO");
-        winStatusText.classList.remove("winX");
-        winStatusText.appendChild(iconOmark.cloneNode());
-        winStatusText.textContent += "Wins!";
+        leftBar.classList.remove("activeWon");
+        rightBar.classList.add("activeWon");
+        //winStatusText.classList.add("winO");
+        //winStatusText.classList.remove("winX");
+        //winStatusText.appendChild(iconOmark.cloneNode());
+        //winStatusText.textContent += "Wins!";
     }
 }
 
 container.addEventListener("click", (e) =>{
     if(!gameController.getGameStatus()){
         const element = document.elementFromPoint(e.clientX, e.clientY);
-        element.setAttribute("disabled", "");
+        // element.setAttribute("disabled", "");
         const player = gameController.getActivePlayer();
         const x = element.dataset.idX;
         const y = element.dataset.idY;
@@ -292,6 +298,7 @@ clearButton.addEventListener("click", () => {
 resetButton.addEventListener("click", () =>{
     gameController.resetGame();
     gameController.clearBoard();
+    updateScore();
     activePlayerUI();
     clearBoardUI();
     createBordUI();

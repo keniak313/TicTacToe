@@ -1,19 +1,28 @@
 @import url(./modern-normalize.css);
+@import url('https://fonts.googleapis.com/css2?family=Playwrite+IN:wght@100..400&family=Roboto:ital,wght@0,100..900;1,100..900&family=Smooch+Sans:wght@100..900&display=swap');
+
 
 :root{
     --color-bg:rgb(37, 52, 61);
     --color-black:rgb(20, 33, 37);
     --color-x:rgb(216, 82, 82);
     --color-o:rgb(62, 134, 216);
+    --color-gold:rgb(238, 153, 57);
     --color-cell:rgb(58, 93, 114);
-    --color-cell-lighter:rgb(62, 150, 190);
+    --color-cell-lighter:rgb(58, 117, 145);
     --color-cell-darker:rgb(22, 41, 51);
     --color-button-clear:rgb(230, 185, 61);
+    --color-button-clear-dark:rgb(182, 127, 46);
+    --color-button-clear-hover:rgb(163, 108, 24);
     --color-button-reset:rgb(223, 106, 51);
+    --color-button-reset-dark:rgb(165, 57, 30);
+    --color-button-reset-hover:rgb(167, 54, 26);
+
+    --gap: 0.7rem;
 }
 
 *{
-    font-family: 'Courier New', Courier, monospace;
+    font-family: "Smooch Sans", sans-serif;
     margin: 0;
     padding: 0;
     font-weight: 600;
@@ -29,28 +38,25 @@ body{
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 20px;
 }
 
 .game{
     display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
     grid-template-rows: 1fr 3fr 1fr;
     justify-content: center;
     align-items: center;
-}
-
-.top{
-    grid-column: 1 / 4;
-    grid-row: 1 / 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 4rem;
+    gap:var(--gap);
 }
 
 .left, .right{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap:var(--gap);
+    padding: 0.5rem;
     font-size: 5rem;
     font-weight: 600;
     opacity: 0.5;
@@ -63,36 +69,42 @@ body{
 }
 
 .activePlayer{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
     height:100%;
-    background: linear-gradient(var(--color-black), rgba(0,0,0,0));
+    background: linear-gradient(var(--color-black), rgba(0,0,0,0) 80%);
     opacity: 1;
     border-radius: 1rem;
-    margin: 1rem;
-    padding: 0.5rem;
     transition: 1s;
     transform: scale(1.1);
+}
+
+.activeWon{
+    transition: 1s;
+    animation-name: active-won;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes active-won{
+    from{
+        /* background-color: var(--color-black); */
+        transform: scale(1);
+    }
+    to{
+        /* background-color: var(--color-gold); */
+        transform: scale(1.1);
+    }
 }
 
 .left{
     grid-column: 1 / 2;
     grid-row: 2 / 3;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
     color: var(--color-x);
 }
 
 .right{
-    grid-column: 3 / 4;
+    grid-column: 4 / 5;
     grid-row: 2 / 3;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
     color: var(--color-o);
 }
 
@@ -113,19 +125,19 @@ body{
 }
 
 .bottom{
-    grid-column: 1 / 4;
+    grid-column: 2 / 4;
     grid-row: 3 / 4;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     text-align: center;
-    gap: 1rem;
+    gap:var(--gap);
 }
 
 .container{
     grid-row: 2 / 3;
-    grid-column: 2 / 3;
+    grid-column: 2 / 4;
     width: 400px;
     height: 400px;
     display: grid;
@@ -133,7 +145,7 @@ body{
     grid-template-rows: repeat(3, 1fr);
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap:var(--gap);
 }
 
 .cell{
@@ -146,10 +158,14 @@ body{
     text-align: center;
     font-size: 5rem;
     border-radius: 1rem;
+    transition: 0.2s;
+    box-shadow: var(--color-cell-darker) 0px 5px;
 }
 
 .cell:active{
     transform: scale(1.1);
+    transform: translateY(5px);
+    box-shadow: var(--color-cell-darker) 0px 0px;
     transition: 0.1s ;
 }
 
@@ -175,19 +191,87 @@ body{
     border-color: var(--color-cell-lighter);
     border-width: 0.2rem;
     transition: 1s;
+
+    animation-name: cell-won;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes cell-won{
+    from{
+        border-color: var(--color-cell);
+        transform: scale(1);
+    }
+    to{
+        border-color: var(--color-gold);
+        transform: scale(1.1);
+    }
 }
 
 button{
     border-style: none;
-    padding: 1rem;;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     text-transform: uppercase;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--color-black);
+}
+
+button.clear, button.reset{
+    padding: 0.8rem;
+    height: 100%;
+    width: 100%;
+}
+
+button:hover{
+    opacity: 0.7;
 }
 
 button.clear{
     background-color: var(--color-button-clear);
+    box-shadow: var(--color-button-clear-dark) 0px 5px;
+}
+
+button.clear:active{ 
+    box-shadow: var(--color-button-clear-dark) 0px 0px;
+    transform: translateY(5px);
 }
 
 button.reset{
     background-color: var(--color-button-reset);
+    box-shadow: var(--color-button-reset-dark) 0px 5px;
+}
+
+button.reset:active{ 
+    box-shadow: var(--color-button-reset-dark) 0px 0px;
+    transform: translateY(5px);
+}
+
+button.cell:active{
+    background-color: var(--color-cell-darker);
+    transition: 0s;
+}
+
+@media (max-width: 600px){
+    .game{
+        height: 100vh;
+    }
+
+    .left, .right{
+        padding-top: 1rem;
+        font-size: 4rem;
+    }
+
+    .playerOneScore, .playerTwoScore{
+        font-size: 3rem;
+    }
+    .left{
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+    }
+    .right{
+        grid-column: 3 / 4;
+        grid-row: 1 / 2;
+    }
 }
