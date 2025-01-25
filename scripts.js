@@ -130,7 +130,8 @@ const gameController = (function() {
             getActivePlayer().giveScore();
             winStatusUI(getActivePlayer().marker);
             console.log(`${name} Wins, Current Score: ${getActivePlayer().getScore()}`)
-            switchActivePlayer(); 
+            updateDialog(getActivePlayer());
+            switchActivePlayer();
             return true;
         }else{
             return false;
@@ -159,6 +160,9 @@ const gameController = (function() {
             console.log(
                 `Placing ${activePlayer.name} marker "${activePlayer.marker}" onto ${x} ${y}`
             );
+            if(board.getFreeCells() === 0){
+                updateDialog("Game Over");
+            }
             checkGameStatus();
             switchActivePlayer(); 
         }
@@ -182,7 +186,7 @@ const gameController = (function() {
 
 const container = document.querySelector(".container");
 const cellNode = document.createElement("button");
-const winStatusText = document.querySelector(".winStatus");
+const dialog = document.querySelector("dialog");
 
 const leftBar = document.querySelector(".left");
 const rightBar = document.querySelector(".right");
@@ -269,6 +273,30 @@ function winStatusUI(marker){
     }
 }
 
+function updateDialog(input){
+    const dialogIcon = document.querySelector(".dialogIcon");
+    const dialogText = document.querySelector(".dialogText");
+    dialogIcon.textContent = "";
+    dialogText.textContent = "";
+    if(input.marker === "X"){
+        dialogIcon.appendChild(iconXmark.cloneNode(true));
+        dialogText.textContent = " Wins!"
+    }else if(input.marker === "O"){
+        dialogIcon.appendChild(iconOmark.cloneNode(true));
+        dialogText.textContent = " Wins!"
+    }else{
+        //Game Over
+        dialogText.textContent = "Game Over";
+    }
+    dialog.showModal();
+}
+
+//updateDialog("");
+
+dialog.addEventListener("click", () => {
+    dialog.close();
+});
+
 container.addEventListener("click", (e) =>{
     if(!gameController.getGameStatus()){
         const element = document.elementFromPoint(e.clientX, e.clientY);
@@ -276,15 +304,17 @@ container.addEventListener("click", (e) =>{
         const player = gameController.getActivePlayer();
         const x = element.dataset.idX;
         const y = element.dataset.idY;
-        element.dataset.marker = player.marker;
-        gameController.playRound(x, y);
-        if(player.marker === "X"){
-            element.appendChild(iconXmark.cloneNode());
-        }else{
-            element.appendChild(iconOmark.cloneNode());
+        if(element.dataset.marker === ""){
+            element.dataset.marker = player.marker;
+            gameController.playRound(x, y);
+            if(player.marker === "X"){
+                element.appendChild(iconXmark.cloneNode());
+            }else{
+                element.appendChild(iconOmark.cloneNode());
+            }
+            updateScore();
+            activePlayerUI();   
         }
-        updateScore();
-        activePlayerUI();
     }
 });
 
