@@ -47,12 +47,12 @@ body{
     flex-direction: column;
     flex: 1;
     font-size: 4rem;
-    min-width: 250px;
     padding: 1rem;
     border-radius: 1rem;
     margin: 10px;
     z-index: 100;
     animation: get-ready 2s ease-out;
+    overflow: hidden;
 }
 
 .blockerText{
@@ -85,6 +85,7 @@ blocker{
     justify-content: center;
     align-items: center;
     background-color: rgba(26, 32, 46, 0.5);
+    overflow: hidden;
 }
 
 .blockerAnim{
@@ -338,6 +339,8 @@ button{
     text-transform: uppercase;
     font-weight: 800;
     color: var(--color-black);
+    transition-property: all;
+    transition-duration: 0.2s;
 }
 
 button:active{
