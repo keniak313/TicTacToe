@@ -1,3 +1,5 @@
+///--- Game Logic ---///
+
 function gameboard () {
 
     let board = [];
@@ -173,20 +175,15 @@ const gameController = (function() {
     return{playRound, getActivePlayer, getGameStatus, getPlayerOneScore, getPlayerTwoScore, clearBoard, resetGame};
 })();
 
-//TEST GAME BELOW
-
-//gameController.playRound(1,0);
-// gameController.playRound(1,1);
-// gameController.playRound(0,0);
-// gameController.playRound(2,0);
-// gameController.playRound(0,1);
-// gameController.playRound(0,2);
-
-//Game UI
+///--- Variables ---///
 
 const container = document.querySelector(".container");
 const cellNode = document.createElement("button");
 const dialog = document.querySelector("dialog");
+
+const blockUi = document.querySelector("blocker");
+const blockerText = document.querySelector(".blockerText");
+const blockerIcon = document.querySelector(".blockerIcon");
 
 const leftBar = document.querySelector(".left");
 const rightBar = document.querySelector(".right");
@@ -210,16 +207,49 @@ cellNode.setAttribute("data-id-x", "0");
 cellNode.setAttribute("data-id-y", "0");
 cellNode.setAttribute("data-marker", "");
 
+///--- UI ---///
+
+function updateDialog(input){
+    console.log(input);
+    blockerIcon.textContent = "";
+    if(input.marker === "X"){
+        blockerIcon.appendChild(iconXmark.cloneNode(true));
+        blockerText.textContent = " Wins!"
+    }else if(input.marker === "O"){
+        blockerIcon.appendChild(iconOmark.cloneNode(true));
+        blockerText.textContent = " Wins!"
+    }else{
+        blockerIcon.textContent = "";
+        blockerText.textContent = input;
+    }
+    blockUi.setAttribute(`shown`, true);
+    blockUi.classList.add("blockerAnim");
+    blockUi.addEventListener("animationend", () => {
+        blockUi.setAttribute(`shown`, false);
+        blockUi.classList.remove("blockerAnim");
+    });
+}
+
 function createBordUI() {
+    updateDialog("Get Ready!");
+    const timer = ms => new Promise(res => setTimeout(res, ms));
     const arr = gameboard().getGameboard();
-    let i = 0;
-    arr.forEach((valX, index) =>{
-        cellNode.setAttribute("data-id-x", index);
-        arr[i].forEach((valY, index) => {
-            cellNode.setAttribute("data-id-y", index);
-            container.appendChild(cellNode.cloneNode(true));
-        })
-    })
+    let cellsCreated = 0;
+    async function load() {
+        for(let i = 0; i < 3; i++){
+            cellNode.setAttribute("data-id-x", i);
+            for(let j = 0; j < 3; j++){
+                cellNode.setAttribute("data-id-y", j);
+                container.appendChild(cellNode.cloneNode(true));
+                cellsCreated ++;
+                await timer(100);
+            };
+        };
+        //return cellsCreated;
+    };
+    load();
+    // load().then(() => {
+    // })
 };
 
 function init(){
@@ -228,9 +258,6 @@ function init(){
     playerTwoScoreText.textContent = gameController.getPlayerTwoScore();
     activePlayerUI();
 };
-
-createBordUI();
-init();
 
 function updateScore(){
     playerOneScoreText.textContent = gameController.getPlayerOneScore();
@@ -259,78 +286,55 @@ function winStatusUI(marker){
     if(marker === "X"){
         leftBar.classList.add("activeWon");
         rightBar.classList.remove("activeWon");
-        //winStatusText.classList.add("winX");
-        //winStatusText.classList.remove("winO");
-        //winStatusText.appendChild(iconXmark.cloneNode());
-        //winStatusText.textContent += "Wins!";
     }else{
         leftBar.classList.remove("activeWon");
         rightBar.classList.add("activeWon");
-        //winStatusText.classList.add("winO");
-        //winStatusText.classList.remove("winX");
-        //winStatusText.appendChild(iconOmark.cloneNode());
-        //winStatusText.textContent += "Wins!";
     }
 }
 
-function updateDialog(input){
-    const dialogIcon = document.querySelector(".dialogIcon");
-    const dialogText = document.querySelector(".dialogText");
-    dialogIcon.textContent = "";
-    dialogText.textContent = "";
-    if(input.marker === "X"){
-        dialogIcon.appendChild(iconXmark.cloneNode(true));
-        dialogText.textContent = " Wins!"
-    }else if(input.marker === "O"){
-        dialogIcon.appendChild(iconOmark.cloneNode(true));
-        dialogText.textContent = " Wins!"
-    }else{
-        //Game Over
-        dialogText.textContent = "Game Over";
-    }
-    dialog.showModal();
-}
+///--- Input ---///
 
-//updateDialog("");
-
-dialog.addEventListener("click", () => {
-    dialog.close();
-});
-
-container.addEventListener("click", (e) =>{
-    if(!gameController.getGameStatus()){
-        const element = document.elementFromPoint(e.clientX, e.clientY);
-        // element.setAttribute("disabled", "");
-        const player = gameController.getActivePlayer();
-        const x = element.dataset.idX;
-        const y = element.dataset.idY;
-        if(element.dataset.marker === ""){
-            element.dataset.marker = player.marker;
-            gameController.playRound(x, y);
-            if(player.marker === "X"){
-                element.appendChild(iconXmark.cloneNode());
-            }else{
-                element.appendChild(iconOmark.cloneNode());
+function inputHandler(){
+    container.addEventListener("mouseup", (e) =>{
+        if(!gameController.getGameStatus()){
+            const element = document.elementFromPoint(e.clientX, e.clientY);
+            // element.setAttribute("disabled", "");
+            const player = gameController.getActivePlayer();
+            const x = element.dataset.idX;
+            const y = element.dataset.idY;
+            if(element.dataset.marker === ""){
+                element.dataset.marker = player.marker;
+                gameController.playRound(x, y);
+                if(player.marker === "X"){
+                    element.appendChild(iconXmark.cloneNode());
+                }else{
+                    element.appendChild(iconOmark.cloneNode());
+                }
+                updateScore();
+                activePlayerUI();   
             }
-            updateScore();
-            activePlayerUI();   
         }
-    }
-});
+    });
+    
+    clearButton.addEventListener("mouseup", () => {
+        gameController.clearBoard();
+        clearBoardUI();
+        createBordUI();
+    });
+    
+    resetButton.addEventListener("mouseup", () =>{
+        gameController.resetGame();
+        gameController.clearBoard();
+        updateScore();
+        activePlayerUI();
+        clearBoardUI();
+        createBordUI();
+    });
+};
 
-clearButton.addEventListener("click", () => {
-    gameController.clearBoard();
-    clearBoardUI();
-    createBordUI();
-    winStatusText.textContent = "";
-});
 
-resetButton.addEventListener("click", () =>{
-    gameController.resetGame();
-    gameController.clearBoard();
-    updateScore();
-    activePlayerUI();
-    clearBoardUI();
-    createBordUI();
-    winStatusText.textContent = "";
-});
+
+init();
+createBordUI();
+inputHandler();
+

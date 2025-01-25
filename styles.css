@@ -37,26 +37,86 @@ body{
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    overflow: hidden;
 }
 
-.dialogIcon{
-    text-shadow: var(--color-black) 0px 5px;
-}
-
-.dialogText{
-    font-weight: 900;
-    color: var(--color-popup);
-    text-shadow: var(--color-popup-shadow) 0px 5px;
-    text-transform: uppercase;
-}
-
-.dialogContainer{
+.blockerContainer{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     flex: 1;
     font-size: 4rem;
+    min-width: 250px;
+    padding: 1rem;
+    border-radius: 1rem;
+    margin: 10px;
+    z-index: 100;
+    animation: get-ready 2s ease-out;
+}
+
+.blockerText{
+    font-size: 5rem;
+}
+
+@keyframes get-ready {
+    0%{
+        transform: scale(0);
+    }
+    20%{
+        transform: scale(1.2);
+    }
+    80%{
+        transform: scale(1);
+        opacity: 1;
+    }
+    100%{
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+blocker{
+    min-height: 100%;
+    min-width: 100%;
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(26, 32, 46, 0.5);
+}
+
+.blockerAnim{
+    animation: hide-blocker 2.5s ease-out;
+}
+
+[shown="true"]{
+    display: flex;
+}
+
+[shown="false"]{
+    display: none;
+}
+
+@keyframes hide-blocker{
+    60%{
+        opacity: 1;
+    }
+    80%{
+        opacity: 0;
+    }
+}
+
+.blockerIcon{
+    text-shadow: var(--color-black) 0px 5px;
+}
+
+.dialogText, .blockerText{
+    font-weight: 900;
+    color: var(--color-popup);
+    text-shadow: var(--color-popup-shadow) 0px 5px;
+    text-transform: uppercase;
 }
 
 dialog[open]{
@@ -108,7 +168,7 @@ dialog{
     font-size: 5rem;
     font-weight: 600;
     opacity: 0.5;
-    transform: scale(1);
+    transition: 1s;
 }
 
 .playerOneScore, .playerTwoScore{
@@ -181,6 +241,8 @@ dialog{
     align-items: center;
     text-align: center;
     gap:var(--gap);
+    transition: 1s;
+    height: 100%;
 }
 
 .container{
@@ -203,20 +265,36 @@ dialog{
     text-align: center;
     font-size: 5rem;
     border-radius: 1rem;
-    transition: 0.2s;
     box-shadow: var(--color-cell-darker) 0px 5px;
+    animation: cell-anim 1s;
 }
 
-.cell:active{
-    transform: scale(1.1);
-    transform: translateY(5px);
-    box-shadow: var(--color-cell-darker) 0px 0px;
-    transition: 0.1s ;
+@keyframes cell-anim{
+    from{
+        opacity: 0;
+        transform: translateY(-500px);
+    }
+    30%{
+        transform: scale(1.2);
+    }
+
+    to{
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
 }
 
-.cell:hover{
-    transform: scale(0.9);
-    transition: 0.3s;
+@starting-style{
+    .left{
+        transform: translateX(-100px);
+    }
+    .right{
+        transform: translateX(100px);
+    }
+    .bottom{
+        opacity: 0;
+        transform: translatey(100px);
+    }
 }
 
 .cell:disabled{
@@ -258,20 +336,25 @@ button{
     border-style: none;
     border-radius: 0.5rem;
     text-transform: uppercase;
-    font-size: 1.6rem;
     font-weight: 800;
     color: var(--color-black);
 }
 
+button:active{
+    transform: translateY(5px) scale(0.9);
+}
+
 button.clear, button.reset{
+    font-size: 1.6rem;
     padding: 0.8rem;
-    height: 100%;
+    height: 60%;
     width: 100%;
 }
 
-button:hover{
-    opacity: 0.7;
+button.cell:active{
+    box-shadow: var(--color-cell-darker) 0px 0px;
 }
+
 
 button.clear{
     background-color: var(--color-button-clear);
@@ -280,7 +363,6 @@ button.clear{
 
 button.clear:active{ 
     box-shadow: var(--color-button-clear-dark) 0px 0px;
-    transform: translateY(5px);
 }
 
 button.reset{
@@ -290,12 +372,13 @@ button.reset{
 
 button.reset:active{ 
     box-shadow: var(--color-button-reset-dark) 0px 0px;
-    transform: translateY(5px);
 }
 
-button.cell:active{
-    background-color: var(--color-cell-darker);
-    transition: 0s;
+@media (any-hover: hover) {
+    button:hover{
+        opacity: 0.7;
+        transition: 0.3s;
+    }
 }
 
 @media (max-width: 600px){
@@ -322,5 +405,17 @@ button.cell:active{
     .right{
         grid-column: 3 / 4;
         grid-row: 1 / 2;
+    }
+}
+
+@media (max-width: 370px){
+    .cell{
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 260px){
+    .cell{
+        font-size: 2.5rem;
     }
 }
