@@ -30,6 +30,12 @@
     font-weight: 600;
 }
 
+*:focus{
+    outline-color: rgb(211, 211, 211);
+    outline-style: solid;
+    outline-width: 3px;
+}
+
 body{
     background-color: var(--color-bg);
     min-height: 100vh;
